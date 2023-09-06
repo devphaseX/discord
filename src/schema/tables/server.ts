@@ -1,8 +1,10 @@
 import { InferInsertModel, InferSelectModel, relations } from 'drizzle-orm';
+import { createInsertSchema } from 'drizzle-zod';
 import { profiles } from './profile';
 import { pgTable, uuid, timestamp, varchar, text } from 'drizzle-orm/pg-core';
 import { members } from './member';
 import { channels } from './channel';
+import { TypeOf, string } from 'zod';
 
 const servers = pgTable('servers', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -28,5 +30,20 @@ export const serverRelations = relations(servers, ({ one, many }) => ({
 type InsertServer = InferInsertModel<typeof servers>;
 type SelectServer = InferSelectModel<typeof servers>;
 
-export type { InsertServer, SelectServer };
-export { servers };
+const clientInsertServer = createInsertSchema(servers, {
+  name: string({ required_error: 'Provide a name for the server' })
+    .max(256)
+    .min(1, { message: 'Server name is required' }),
+  imageUrl: string({
+    required_error: 'profile image required for the created server',
+    invalid_type_error: 'invalid image type',
+  }).url({ message: 'invalid image type' }),
+}).pick({
+  name: true,
+  imageUrl: true,
+});
+
+type ClientInsertServer = TypeOf<typeof clientInsertServer>;
+
+export type { InsertServer, SelectServer, ClientInsertServer };
+export { servers, clientInsertServer };

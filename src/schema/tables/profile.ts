@@ -6,7 +6,7 @@ import { channels } from './channel';
 
 const profiles = pgTable('profiles', {
   id: uuid('id').primaryKey().defaultRandom(),
-  userId: varchar('user_id', { length: 256 }).notNull(),
+  userId: varchar('user_id', { length: 256 }).notNull().unique(),
   name: text('name').notNull(),
   imageUrl: text('image_url'),
   email: varchar('image', { length: 256 }).notNull(),
@@ -20,8 +20,8 @@ export const profileRelation = relations(profiles, ({ many }) => ({
   channels: many(channels),
 }));
 
-type InsertUser = InferInsertModel<typeof profiles>;
-type SelectUser = InferSelectModel<typeof profiles>;
+type InsertProfile = InferInsertModel<typeof profiles>;
+type SelectProfile = InferSelectModel<typeof profiles>;
 
-export type { InsertUser, SelectUser };
+export type { InsertProfile, SelectProfile };
 export { profiles };

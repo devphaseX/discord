@@ -4,7 +4,10 @@ import postgres from 'postgres';
 import path from 'path';
 import { migrate } from 'drizzle-orm/postgres-js/migrator';
 
-const migrationClient = postgres(parsedEnv.DATABASE_URL, { max: 1, ssl: true });
+const migrationClient = postgres(parsedEnv.DATABASE_URL, {
+  max: 1,
+  ssl: 'require',
+});
 const db: PostgresJsDatabase = drizzle(migrationClient);
 
 (async () => {

@@ -7,6 +7,8 @@ const envSchema = object({
   DATABASE_URL: string().nonempty(),
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: string().nonempty(),
   CLERK_SECRET_KEY: string().nonempty(),
+  UPLOADTHING_SECRET: string().nonempty(),
+  UPLOADTHING_APP_ID: string().nonempty(),
 });
 
 type ParsedEnv = TypeOf<typeof envSchema>;

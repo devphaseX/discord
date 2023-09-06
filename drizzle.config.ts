@@ -7,5 +7,6 @@ export default {
   driver: 'pg',
   dbCredentials: {
     connectionString: parsedEnv.DATABASE_URL,
+    ssl: false,
   },
 } satisfies Config;
