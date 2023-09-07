@@ -16,7 +16,7 @@ const channels = pgTable(
   'channels',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    type: channelType('type'),
+    type: channelType('type').notNull(),
     profileId: uuid('profile_id')
       .notNull()
       .references(() => profiles.id, { onDelete: 'cascade' }),

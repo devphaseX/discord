@@ -13,7 +13,7 @@ const members = pgTable(
   'members',
   {
     id: uuid('id').primaryKey().defaultRandom(),
-    role: memberRole('role'),
+    role: memberRole('role').default('GUEST'),
     profileId: uuid('profile_id')
       .notNull()
       .references(() => profiles.id, { onDelete: 'cascade' }),

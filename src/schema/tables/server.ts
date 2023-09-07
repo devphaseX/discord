@@ -1,16 +1,16 @@
 import { InferInsertModel, InferSelectModel, relations } from 'drizzle-orm';
-import { createInsertSchema } from 'drizzle-zod';
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { profiles } from './profile';
 import { pgTable, uuid, timestamp, varchar, text } from 'drizzle-orm/pg-core';
 import { members } from './member';
 import { channels } from './channel';
-import { TypeOf, string } from 'zod';
+import { TypeOf, date, string } from 'zod';
 
 const servers = pgTable('servers', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 256 }).notNull(),
   imageUrl: text('image_url'),
-  inviteCode: text('invite_code'),
+  inviteCode: text('invite_code').unique(),
   profileId: uuid('profile_id')
     .notNull()
     .references(() => profiles.id),
@@ -43,7 +43,12 @@ const clientInsertServer = createInsertSchema(servers, {
   imageUrl: true,
 });
 
+const clientSelectServer = createSelectSchema(servers, {
+  createdAt: date({ coerce: true }).optional(),
+  updateAt: date({ coerce: true }).optional(),
+});
+
 type ClientInsertServer = TypeOf<typeof clientInsertServer>;
 
 export type { InsertServer, SelectServer, ClientInsertServer };
-export { servers, clientInsertServer };
+export { servers, clientInsertServer, clientSelectServer };

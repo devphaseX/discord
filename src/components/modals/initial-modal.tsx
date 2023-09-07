@@ -24,6 +24,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { FileUpload } from '@/components/file-upload';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { INVITE_LOCAL_STORAGE_KEY } from '../client-auth-redirect';
 
 export const InitialModal = () => {
   const [mounted, setMounted] = useState(false);
@@ -53,8 +54,6 @@ export const InitialModal = () => {
   }, []);
 
   if (!mounted) return null;
-
-  // if (!mounted) return null;
 
   return (
     <Dialog open={true}>
