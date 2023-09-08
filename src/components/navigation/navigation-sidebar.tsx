@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/schema/db';
-import { servers } from '@/schema/tables';
+import { members, servers } from '@/schema/tables';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { NavigationAction } from './navigation-action';
@@ -17,9 +17,19 @@ export const NavigationSidebar = async () => {
     return redirect('/');
   }
 
-  const joinedServers = await db.query.servers.findMany({
-    where: eq(servers.profileId, profile.id),
-  });
+  const joinedServers = await db
+    .select({
+      id: servers.id,
+      name: servers.name,
+      imageUrl: servers.imageUrl,
+      inviteCode: servers.inviteCode,
+      profileId: servers.profileId,
+      createdAt: servers.createdAt,
+      updateAt: servers.updateAt,
+    })
+    .from(members)
+    .innerJoin(servers, eq(servers.id, members.serverId))
+    .where(eq(members.profileId, profile.id));
 
   return (
     <div className="space-y-4 flex flex-col items-center h-full text-primary w-full dark:bg-[#1E1F22] py-3">
