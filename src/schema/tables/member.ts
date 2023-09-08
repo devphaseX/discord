@@ -1,13 +1,23 @@
 import { InferInsertModel, InferSelectModel, relations } from 'drizzle-orm';
-import { pgTable, uuid, timestamp, pgEnum, unique } from 'drizzle-orm/pg-core';
+import {
+  pgTable,
+  uuid,
+  timestamp,
+  pgEnum,
+  unique,
+  PgEnum,
+} from 'drizzle-orm/pg-core';
 import { profiles } from './profile';
 import { servers } from './server';
+import { InferEnumType } from '@/type';
 
 export const memberRole = pgEnum('member_role', [
   'ADMIN',
   'MODERATOR',
   'GUEST',
 ]);
+
+export type MemberRole = InferEnumType<typeof memberRole>;
 
 const members = pgTable(
   'members',

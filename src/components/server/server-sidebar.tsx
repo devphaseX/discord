@@ -18,13 +18,15 @@ interface ServerSidebarProps {
   serverId: string;
 }
 
+export type GroupedChannel = {
+  [T in SelectChannel['type']]: Array<SelectChannel>;
+};
+
 export const ServerSidebar = async ({ serverId }: ServerSidebarProps) => {
   const profile = await currentProfile();
   if (!profile) {
     return redirect('/');
   }
-
-  type GroupedChannel = { [T in SelectChannel['type']]: Array<SelectChannel> };
 
   const [[currentUserMembership], [joined_server]] = await Promise.all([
     db.select().from(members).where(eq(members.profileId, profile.id)),
@@ -39,6 +41,7 @@ export const ServerSidebar = async ({ serverId }: ServerSidebarProps) => {
               return acc;
             }, {} as GroupedChannel)
         ),
+        currentMembersSize: sql<number>`count(${members})`.mapWith(Number),
         members: sql<
           {
             id: string;
@@ -49,13 +52,17 @@ export const ServerSidebar = async ({ serverId }: ServerSidebarProps) => {
           }[]
         >`json_agg(json_build_object('id', ${members.id}, 'role',
          ${members.role}, 'serverId', ${members.serverId}, 'profileId',
-         ${members.profileId}, 'profile', ${profiles}))`,
+         ${members.profileId}, 'profile', 
+         json_build_object('id',${profiles.id}, 
+         'name', ${profiles.name},'email', 
+         ${profiles.email},'userId', ${profiles.userId},
+          'imageUrl', ${profiles.imageUrl})))`,
       })
       .from(servers)
       .where(eq(servers.id, serverId))
       .innerJoin(channels, eq(channels.serverId, servers.id))
       .innerJoin(members, eq(members.serverId, servers.id))
-      .innerJoin(profiles, eq(members.profileId, profile.id))
+      .innerJoin(profiles, eq(members.profileId, profiles.id))
       .groupBy(servers.id),
   ]);
 
@@ -63,9 +70,10 @@ export const ServerSidebar = async ({ serverId }: ServerSidebarProps) => {
     return redirect('/');
   }
 
-  const { server, members: _members } = joined_server;
+  const { server, currentMembersSize, members: _members } = joined_server;
   const serverWithMembers: ServerWithMembersWithProfiles = {
     ...server,
+    currentMembersSize,
     members: _members as ServerWithMembersWithProfiles['members'],
   };
 

@@ -8,6 +8,20 @@
       "when": 1693919699941,
       "tag": "0000_first_pandemic",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1694083695718,
+      "tag": "0001_supreme_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1694083983312,
+      "tag": "0002_yielding_loki",
+      "breakpoints": true
     }
   ]
 }
