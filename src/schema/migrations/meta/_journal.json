@@ -5,22 +5,15 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1693919699941,
-      "tag": "0000_first_pandemic",
+      "when": 1694260686179,
+      "tag": "0000_fluffy_flatman",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "5",
-      "when": 1694083695718,
-      "tag": "0001_supreme_shockwave",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1694083983312,
-      "tag": "0002_yielding_loki",
+      "when": 1694260749818,
+      "tag": "0001_perpetual_wasp",
       "breakpoints": true
     }
   ]

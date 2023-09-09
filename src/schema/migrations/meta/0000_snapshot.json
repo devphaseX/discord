@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "pg",
-  "id": "a6ba4931-3e69-4731-8857-ff1fc259af75",
+  "id": "d8fa51be-8c1f-4e86-95aa-49e7cb8769b8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "channels": {
@@ -19,7 +19,7 @@
           "name": "type",
           "type": "channel_type",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "profile_id": {
           "name": "profile_id",
@@ -35,7 +35,7 @@
         },
         "name": {
           "name": "name",
-          "type": "varchar(256)",
+          "type": "varchar(50)",
           "primaryKey": false,
           "notNull": true
         },
@@ -90,7 +90,8 @@
           "nullsNotDistinct": false,
           "columns": [
             "profile_id",
-            "server_id"
+            "server_id",
+            "type"
           ]
         }
       }
@@ -110,7 +111,8 @@
           "name": "role",
           "type": "member_role",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "'GUEST'"
         },
         "profile_id": {
           "name": "profile_id",
@@ -233,7 +235,15 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "profiles_user_id_unique": {
+          "name": "profiles_user_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "user_id"
+          ]
+        }
+      }
     },
     "servers": {
       "name": "servers",
@@ -302,7 +312,15 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {
+        "servers_invite_code_unique": {
+          "name": "servers_invite_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "invite_code"
+          ]
+        }
+      }
     }
   },
   "enums": {

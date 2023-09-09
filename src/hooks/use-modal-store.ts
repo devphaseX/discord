@@ -1,8 +1,12 @@
-import { SelectServer } from '@/schema/tables';
 import { ServerWithMembersWithProfiles } from '@/type';
 import { create } from 'zustand';
 
-export type ModalType = 'createServer' | 'invite' | 'editServer' | 'members';
+export type ModalType =
+  | 'createServer'
+  | 'invite'
+  | 'editServer'
+  | 'members'
+  | 'createChannel';
 
 interface ModalData {
   server?: ServerWithMembersWithProfiles;
