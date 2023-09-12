@@ -8,14 +8,14 @@ import { TypeOf, date, string } from 'zod';
 
 const servers = pgTable('servers', {
   id: uuid('id').primaryKey().defaultRandom(),
-  name: varchar('name', { length: 256 }).notNull(),
+  name: varchar('name', { length: 256 }).notNull().unique(),
   imageUrl: text('image_url'),
   inviteCode: text('invite_code').unique(),
   profileId: uuid('profile_id')
     .notNull()
     .references(() => profiles.id),
   createdAt: timestamp('created_at').defaultNow(),
-  updateAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 export const serverRelations = relations(servers, ({ one, many }) => ({
@@ -45,7 +45,7 @@ const clientInsertServer = createInsertSchema(servers, {
 
 const clientSelectServer = createSelectSchema(servers, {
   createdAt: date({ coerce: true }).optional(),
-  updateAt: date({ coerce: true }).optional(),
+  updatedAt: date({ coerce: true }).optional(),
 });
 
 type ClientInsertServer = TypeOf<typeof clientInsertServer>;

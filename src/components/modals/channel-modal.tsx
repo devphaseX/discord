@@ -24,7 +24,7 @@ import {
 } from '@/schema/tables';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useModal } from '@/hooks/use-modal-store';
 import {
@@ -35,18 +35,52 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export const CreateChannelModal = () => {
+export const ChannelModal = () => {
   const router = useRouter();
   const params = useParams() as { serverId?: string };
-  const { onClose, onOpen, opened, type } = useModal();
+  const { onClose, opened, type, data } = useModal();
+
   const createChannelForm = useForm<ClientInsertChannel>({
     defaultValues: { name: '', type: 'TEXT' },
     resolver: zodResolver(clientInsertChannel),
   });
 
+  const typeMatchModalTrigger =
+    type === 'createChannel' || type === 'editChannel';
+
+  const { preDetermineChannelType } = data ?? {};
+
   const validatingFormSubmit = createChannelForm.formState.isLoading;
   const [submittingForm, setFormSubmitting] = useState(false);
-  const shouldOpenModal = type === 'createChannel' && opened;
+  const shouldOpenModal = typeMatchModalTrigger && opened;
+
+  const modalTitle =
+    typeMatchModalTrigger && type === 'createChannel'
+      ? 'Create Channel'
+      : 'Edit Channel';
+
+  const modalActionButtonLabel =
+    typeMatchModalTrigger && type === 'createChannel' ? 'Create' : 'Update';
+
+  useEffect(() => {
+    if (!typeMatchModalTrigger) return;
+
+    if (type === 'editChannel') {
+      if (!data?.channel) {
+        throw new Error(
+          'Expect channel data to be provided.Check to see if channel data is set on modal state'
+        );
+      }
+
+      const { name, type } = data.channel;
+      createChannelForm.setValue('name', name);
+      createChannelForm.setValue('type', type);
+
+      return;
+    } else if (preDetermineChannelType) {
+      createChannelForm.setValue('type', preDetermineChannelType);
+    }
+  }, [type, opened, preDetermineChannelType, createChannelForm]);
 
   const handleClose = () => {
     createChannelForm.reset();
@@ -54,18 +88,29 @@ export const CreateChannelModal = () => {
   };
   const onSubmitCreateServer = createChannelForm.handleSubmit(
     async (payload) => {
+      if (!typeMatchModalTrigger) return;
       try {
         if (!params.serverId) {
           return new TypeError('Server Id missing');
         }
-        const url = new URL('/api/channels', window.location.origin);
         const query = new URLSearchParams({
           serverId: params.serverId,
         });
 
+        const url = new URL(
+          `/api/channels${
+            type === 'editChannel' ? '/' + data?.channel?.id ?? '' : ''
+          }`,
+          window.location.origin
+        );
         url.search = query.toString();
+
         setFormSubmitting(true);
-        await axios.post(url.toString(), payload);
+        if (type === 'createChannel') {
+          await axios.post(url.toString(), payload);
+        } else {
+          await axios.patch(url.toString(), payload);
+        }
         createChannelForm.reset();
         router.refresh();
         onClose();
@@ -82,7 +127,7 @@ export const CreateChannelModal = () => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Create Channel
+            {modalTitle}
           </DialogTitle>
         </DialogHeader>
         <Form {...createChannelForm}>
@@ -101,6 +146,7 @@ export const CreateChannelModal = () => {
                         disabled={validatingFormSubmit || submittingForm}
                         className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
                         placeholder="Enter channel name"
+                        defaultValue={field.value}
                         {...field}
                       />
                     </FormControl>
@@ -116,8 +162,12 @@ export const CreateChannelModal = () => {
                   <FormItem>
                     <FormLabel>Channel Type</FormLabel>
                     <Select
-                      disabled={validatingFormSubmit || submittingForm}
-                      onOpenChange={field.onChange}
+                      disabled={
+                        validatingFormSubmit ||
+                        submittingForm ||
+                        typeof preDetermineChannelType !== 'undefined'
+                      }
+                      onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
@@ -133,12 +183,10 @@ export const CreateChannelModal = () => {
 
                       <SelectContent>
                         {channelType.enumValues.map((type) => (
-                          <SelectItem
-                            key={type}
-                            value={type}
-                            className="capitalize"
-                          >
-                            {type.toLowerCase()}
+                          <SelectItem key={type} value={type}>
+                            <span className="capitalize">
+                              {type.toLowerCase()}
+                            </span>
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -153,7 +201,7 @@ export const CreateChannelModal = () => {
                 variant="primary"
                 disabled={validatingFormSubmit || submittingForm}
               >
-                Create
+                {modalActionButtonLabel}
               </Button>
             </DialogFooter>
           </form>

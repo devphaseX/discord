@@ -15,6 +15,20 @@
       "when": 1694260749818,
       "tag": "0001_perpetual_wasp",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1694617577888,
+      "tag": "0002_purple_quentin_quire",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1694618201546,
+      "tag": "0003_right_brother_voodoo",
+      "breakpoints": true
     }
   ]
 }

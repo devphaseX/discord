@@ -12,9 +12,13 @@ import { profiles } from './profile';
 import { servers } from './server';
 import { createInsertSchema } from 'drizzle-zod';
 import { TypeOf, string } from 'zod';
+import { InferEnumType } from '@/type';
+import { convertPgEnumNative } from '../../lib/utils';
+import { messages } from './message';
 
 export const channelType = pgEnum('channel_type', ['TEXT', 'AUDIO', 'VIDEO']);
-
+export const channelTypeNative = convertPgEnumNative(channelType);
+export type ChannelType = InferEnumType<typeof channelType>;
 const channels = pgTable(
   'channels',
   {
@@ -28,14 +32,14 @@ const channels = pgTable(
       .references(() => servers.id, { onDelete: 'cascade' }),
     name: varchar('name', { length: 50 }).notNull(),
     createdAt: timestamp('created_at').defaultNow(),
-    updateAt: timestamp('updated_at').defaultNow(),
+    updatedAt: timestamp('updated_at').defaultNow(),
   },
   ({ profileId, serverId, name }) => ({
     uniq: unique('channelMemberShip').on(profileId, serverId, name),
   })
 );
 
-export const channelRelations = relations(channels, ({ one }) => ({
+export const channelRelations = relations(channels, ({ one, many }) => ({
   profile: one(profiles, {
     fields: [channels.profileId],
     references: [profiles.id],
@@ -44,6 +48,7 @@ export const channelRelations = relations(channels, ({ one }) => ({
     fields: [channels.profileId],
     references: [servers.id],
   }),
+  messages: many(messages),
 }));
 
 export const clientInsertChannel = createInsertSchema(channels, {

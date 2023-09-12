@@ -1,3 +1,4 @@
+import { ChannelType, SelectConversation } from '@/schema/tables';
 import { ServerWithMembersWithProfiles } from '@/type';
 import { create } from 'zustand';
 
@@ -5,11 +6,17 @@ export type ModalType =
   | 'createServer'
   | 'invite'
   | 'editServer'
+  | 'editChannel'
   | 'members'
-  | 'createChannel';
+  | 'createChannel'
+  | 'leaveServer'
+  | 'deleteServer'
+  | 'deleteChannel';
 
 interface ModalData {
   server?: ServerWithMembersWithProfiles;
+  channel?: SelectConversation;
+  preDetermineChannelType?: ChannelType;
 }
 
 interface ModalStore {
@@ -20,12 +27,12 @@ interface ModalStore {
   onClose: () => void;
 }
 
-export const useModal = create<ModalStore>((set) => ({
+export const useModal = create<ModalStore>((set, get) => ({
   opened: false,
   type: null,
   data: null,
   onOpen: (type, data) => {
-    set({ opened: true, type, data });
+    set({ opened: true, type, data: { ...get().data, ...data } });
   },
 
   onClose: () => set({ type: null, opened: false, data: null }),

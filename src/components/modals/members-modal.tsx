@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useModal } from '@/hooks/use-modal-store';
-import { ServerWithMembersWithProfiles } from '@/type';
+import { MemberInfo, ServerWithMembersWithProfiles } from '@/type';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { UserAvatar } from '@/components/user-avatar';
 import { SelectMember, memberRole } from '@/schema/tables';
@@ -37,8 +37,8 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
 type RoleType = (typeof memberRole.enumValues)[number];
-type RoleMapComponent = { [Role in RoleType]: React.ReactNode | null };
-const roleIconMap = {
+export type RoleMapComponent = { [Role in RoleType]: React.ReactNode | null };
+export const roleIconMap = {
   GUEST: null,
   MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
   ADMIN: <ShieldAlert className="h-4 w-4 text-rose-500" />,
@@ -48,7 +48,7 @@ function MarkActiveRole({
   expectedRole,
   member,
 }: {
-  member: SelectMember;
+  member: MemberInfo;
   expectedRole: RoleType;
 }) {
   return member.role === expectedRole && <Check className="w-4 h-4 ml-auto" />;
@@ -136,13 +136,15 @@ export const MembersModal = () => {
         <ScrollArea className="mt-8 max-h-[420px] pr-6">
           {server.members.map((member) => (
             <div key={member.id} className="flex items-center gap-x-2 mb-6">
-              <UserAvatar src={member.profile.imageUrl ?? undefined} />
+              <UserAvatar src={member.profile?.imageUrl ?? undefined} />
               <div className="flex flex-col gap-y-1">
                 <div className="text-xs font-semibold flex items-center gap-x-1">
-                  {member.profile.name}
+                  {member.profile?.name}
                   {member.role && roleIconMap[member.role]}
                 </div>
-                <p className="text-xs text-zinc-500`">{member.profile.email}</p>
+                <p className="text-xs text-zinc-500`">
+                  {member.profile?.email}
+                </p>
               </div>
               {server.profileId !== member.profileId &&
                 currentActionUserId !== member.id && (

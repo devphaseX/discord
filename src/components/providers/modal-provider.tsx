@@ -4,7 +4,10 @@ import { useEffect, useState } from 'react';
 import { InviteModal } from '@/components/modals/invite-modal';
 import { EditServerModal } from '@/components/modals/edit-server-modal';
 import { MembersModal } from '@/components/modals/members-modal';
-import { CreateChannelModal } from '@/components/modals/create-channel-modal';
+import { ChannelModal } from '@/components/modals/channel-modal';
+import { LeaveServerModal } from '../modals/leave-modal';
+import { DeleteServerModal } from '../modals/delete-server';
+import { DeleteChannelModal } from '../modals/delete-channel-modal';
 
 export const ModalProvider = () => {
   const [mounted, setMounted] = useState(false);
@@ -21,7 +24,10 @@ export const ModalProvider = () => {
       <InviteModal />
       <EditServerModal />
       <MembersModal />
-      <CreateChannelModal />
+      <ChannelModal />
+      <LeaveServerModal />
+      <DeleteServerModal />
+      <DeleteChannelModal />
     </>
   );
 };

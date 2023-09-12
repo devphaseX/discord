@@ -1,7 +1,7 @@
 import { InitialModal } from '@/components/modals/initial-modal';
 import { initialProfile } from '@/lib/initial-profile';
 import { db } from '@/schema/db';
-import { members, profiles, servers } from '@/schema/tables';
+import { members, servers } from '@/schema/tables';
 import { and, eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 

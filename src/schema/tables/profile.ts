@@ -11,7 +11,7 @@ const profiles = pgTable('profiles', {
   imageUrl: text('image_url'),
   email: varchar('image', { length: 256 }).notNull(),
   createdAt: timestamp('created_at').defaultNow(),
-  updateAt: timestamp('updated_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 export const profileRelation = relations(profiles, ({ many }) => ({

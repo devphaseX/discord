@@ -31,6 +31,7 @@ const CurrentServerLayoutPage = async ({
     return redirect('/');
   }
   const { servers: server } = joined_server;
+
   return (
     <div className="h-full">
       <div className="hidden md:flex h-full w-60 z-20 fixed flex-col inset-y-0">
