@@ -1,7 +1,7 @@
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/schema/db';
 import { members, servers } from '@/schema/tables';
-import { eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { notFound, redirect } from 'next/navigation';
 import { ClientRedirectAuth } from '@/components/client-auth-redirect';
 import { auth } from '@clerk/nextjs';
@@ -30,25 +30,32 @@ const InviteCodePage = async ({
   if (!(inviteCode && profile)) return redirect('/');
 
   const [existingServer] = await db
-    .select()
+    .select({
+      id: servers.id,
+      name: servers.name,
+      membership: members,
+    })
     .from(servers)
     .where(eq(servers.inviteCode, inviteCode))
-    .leftJoin(members, eq(members.profileId, profile.id));
+    .leftJoin(
+      members,
+      sql`${members.serverId} = ${servers.id} and ${members.profileId} = ${profile.id}`
+    );
 
   if (!existingServer) {
     return notFound();
   }
 
-  if (existingServer.members) {
-    return redirect(`/servers/${existingServer.servers.id}`);
+  if (existingServer.membership) {
+    return redirect(`/servers/${existingServer.id}`);
   }
 
   await db.insert(members).values({
     profileId: profile.id as string,
-    serverId: existingServer.servers.id,
+    serverId: existingServer.id,
   });
 
-  return redirect(`/servers/${existingServer.servers.id}`);
+  return redirect(`/servers/${existingServer.id}`);
 };
 
 export default InviteCodePage;
