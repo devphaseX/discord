@@ -8,7 +8,7 @@ import {
   profiles,
   servers,
 } from '@/schema/tables';
-import { sql } from 'drizzle-orm';
+import { aliasedTable, sql } from 'drizzle-orm';
 
 export const getOrCreateConversation = async ({
   memberOneId,
@@ -85,7 +85,7 @@ export const getConversion = async ({
         'imageUrl', profiles.image_url)))
       FROM ${members}
       INNER JOIN ${profiles} ON members.profile_id = profiles.id
-      WHERE conversations.member_one_id = ${memberOne})`,
+      WHERE members.id = ${memberOne})`,
 
       memberTwo: sql<
         | [
@@ -114,7 +114,7 @@ export const getConversion = async ({
         'imageUrl', profiles.image_url)))
       FROM ${members}
       INNER JOIN ${profiles} ON members.profile_id = profiles.id
-      WHERE conversations.member_two_id = ${memberTwo})`,
+      WHERE members.id = ${memberTwo})`,
     })
     .from(conversations)
     .where(
