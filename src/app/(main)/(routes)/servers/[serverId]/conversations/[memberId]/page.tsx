@@ -66,7 +66,7 @@ const MemberIdPage = async ({ params }: MemberIdPageProps) => {
   }
 
   if (memberOne.length !== 1 && memberTwo.length !== 1) {
-    if (process.env.NODE_ENV !== 'development') {
+    if (process.env.NODE_ENV?.toLowerCase() === 'production') {
       return redirect(`/servers/${serverId}`);
     } else {
       throw new Error(
