@@ -59,11 +59,26 @@ const MemberIdPage = async ({ params }: MemberIdPageProps) => {
 
   conversation = result as UserSavedConversation;
 
-  const { memberOne, memberTwo } = conversation;
+  let { memberOne, memberTwo } = conversation;
 
   if (!(memberOne && memberTwo)) {
     return redirect(`/servers/${serverId}`);
   }
+
+  if (memberOne.length !== 1 && memberTwo.length !== 1) {
+    if (process.env.NODE_ENV !== 'development') {
+      return redirect(`/servers/${serverId}`);
+    } else {
+      throw new Error(
+        'MemberOne or MemberTwo contains two items. Check your query for possible errors'
+      );
+    }
+  }
+
+  if (memberTwo.find(({ id }) => id === currentMember.id)) {
+    [memberOne, memberTwo] = [memberTwo, memberOne];
+  }
+
   const [memberOneInfo] = memberOne;
   const [memberTwoInfo] = memberTwo;
 
