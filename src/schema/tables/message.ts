@@ -14,17 +14,25 @@ import { channels, members } from '.';
 
 const messages = pgTable('messages', {
   id: uuid('id').primaryKey().defaultRandom(),
-  context: text('context'),
+  content: text('content'),
   deleted: boolean('deleted').default(false).notNull(),
   fileUrl: varchar('file_url', { length: 256 }),
-  memberId: uuid('message_id').references(() => members.id, {
-    onDelete: 'cascade',
-  }),
-  channelId: uuid('channel_id').references(() => channels.id, {
-    onDelete: 'cascade',
-  }),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  memberId: uuid('member_id')
+    .references(() => members.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  channelId: uuid('channel_id')
+    .references(() => channels.id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
+    .defaultNow()
+    .notNull(),
 });
 
 export const messageRelations = relations(messages, ({ one }) => ({
@@ -40,7 +48,7 @@ export const messageRelations = relations(messages, ({ one }) => ({
 
 export const clientInsertMessage = createInsertSchema(messages, {
   fileUrl: string().url({ message: 'Provide an valid image' }),
-}).pick({ context: true, fileUrl: true });
+}).pick({ content: true, fileUrl: true });
 
 export type ClientInsertMessage = TypeOf<typeof clientInsertMessage>;
 
