@@ -29,6 +29,20 @@
       "when": 1694618201546,
       "tag": "0003_right_brother_voodoo",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1694796124633,
+      "tag": "0004_perpetual_squadron_sinister",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1695019998318,
+      "tag": "0005_lame_whistler",
+      "breakpoints": true
     }
   ]
 }
