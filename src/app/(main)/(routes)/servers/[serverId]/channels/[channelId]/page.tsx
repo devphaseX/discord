@@ -1,4 +1,6 @@
+import { ChatMessages } from '@/components/chat-messages';
 import { ChatHeader } from '@/components/chat/chat-header';
+import { ChatInput } from '@/components/chat/chat-input';
 import { currentProfile } from '@/lib/current-profile';
 import { db } from '@/schema/db';
 import {
@@ -50,7 +52,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
     .innerJoin(servers, eq(channels.serverId, servers.id))
     .where(eq(channels.id, params.channelId));
 
-  if (!channelInfo || !channelInfo.currentUserMembership) {
+  if (!(channelInfo && channelInfo.currentUserMembership?.[0])) {
     return redirect('/');
   }
 
@@ -60,6 +62,29 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
         name={channelInfo.name}
         serverId={channelInfo.serverId}
         type="channel"
+      />
+      <ChatMessages
+        member={channelInfo.currentUserMembership[0]!}
+        name={channelInfo.name}
+        chatId={channelInfo.id}
+        type="channel"
+        apiUrl="/api/messages"
+        socketUrl="/api/socket/messages"
+        socketQuery={{
+          channelId: channelInfo.id,
+          serverId: channelInfo.serverId,
+        }}
+        paramKey="channelId"
+        paramValue={channelInfo.id}
+      />
+      <ChatInput
+        name={channelInfo.name}
+        type="channel"
+        apiUrl="/api/socket/messages"
+        query={{
+          channelId: channelInfo.id,
+          serverId: channelInfo.serverId,
+        }}
       />
     </div>
   );
